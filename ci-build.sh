@@ -452,7 +452,7 @@ start_test "Test UUID GET param logging option works..." "${STD_CMD} \
            --link mockserver:mockserver "
 curl -sk https://${DOCKER_HOST_NAME}:${PORT}
 echo "Testing no logging of url params option works..."
-docker logs mockserver | grep '?nginxId='
+docker logs mockserver | grep '?X-Request-Id='
 docker logs ${INSTANCE} | grep '"nginx_uuid": "'
 
 start_test "Test UUID GET param logging option works with other params..." "${STD_CMD} \
@@ -463,7 +463,7 @@ start_test "Test UUID GET param logging option works with other params..." "${ST
            --link mockserver:mockserver "
 curl -sk https://${DOCKER_HOST_NAME}:${PORT}/?foo=bar
 echo "Testing no logging of url params option works..."
-docker logs mockserver | grep '?foo=bar&nginxId='
+docker logs mockserver | grep '?foo=bar&X-Request-Id='
 docker logs ${INSTANCE} | grep '"nginx_uuid": "'
 
 start_test "Test UUID header logging option works..." "${STD_CMD} \

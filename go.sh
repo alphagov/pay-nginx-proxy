@@ -122,7 +122,7 @@ else
 fi
 
 case "${LOG_FORMAT_NAME}" in
-    "json" | "text")
+    "json" | "text" | "govuk_pay_legacy")
         msg "Logging set to ${LOG_FORMAT_NAME}"
 
         if [ "${NO_LOGGING_URL_PARAMS}" ]; then

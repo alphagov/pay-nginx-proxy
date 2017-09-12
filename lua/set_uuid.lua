@@ -6,6 +6,6 @@ else
     uuid.randomseed(socket.gettime()*10000)
     local uuid_str = uuid()
     ngx.var.uuid = uuid_str
-    ngx.var.uuid_log_opt = " nginxId=" .. uuid_str
+    ngx.var.uuid_log_opt = " X-Request-Id=" .. uuid_str
     return uuid_str
 end

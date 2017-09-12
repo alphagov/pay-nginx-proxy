@@ -35,8 +35,8 @@ Variables to control how to configure the proxy (can be set per location, see
 rules to be specified without downloading or mounting in a rule file.
 * `NAXSI_USE_DEFAULT_RULES` - If set to "FALSE" will delete the default rules file.
 * `ENABLE_UUID_PARAM` - If set to "FALSE", will NOT add a UUID url parameter to all requests. The Default will add this
- for easy tracking in down stream logs e.g. `nginxId=50c91049-667f-4286-c2f0-86b04b27d3f0`.
- If set to `HEADER` it will add `nginxId` to the headers, not append to the get params.
+ for easy tracking in down stream logs e.g. `X-Request-Id=50c91049-667f-4286-c2f0-86b04b27d3f0`.
+ If set to `HEADER` it will add `X-Request-Id` to the headers, not append to the get params.
 * `CLIENT_CERT_REQUIRED` - if set to `TRUE`, will deny access at this location, see [Client Certs](#client-certs).
 * `VERIFY_SERVER_CERT` - if set to `TRUE`, will verify the upstream server's TLS certificate is valid and signed by the CA, see [Verifying Upstream Server](#verifying-upstream-server).
 * `USE_UPSTREAM_CLIENT_CERT` - if set to `TRUE`, will use the set of upstream client certs when connecting upstream, see [Upstream Client Certs](#upstream-client-certs).
@@ -199,7 +199,7 @@ For more detail, see the [generated config](./docs/GeneratedConfigs.md#two-separ
 
 ##### One Server, Multiple locations
 
-The example below will proxy the same address for two locations but will disable the UUID (nginxId) parameter for the
+The example below will proxy the same address for two locations but will disable the UUID (X-Request-Id) parameter for the
 /about location only.
 
 See the [generated config](./docs/GeneratedConfigs.md#same-server-proxied) for below:
