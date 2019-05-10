@@ -579,6 +579,20 @@ curl -sk https://${DOCKER_HOST_NAME}:${PORT}
 docker logs "${MOCKSERVER}" 2>/dev/null | grep "nginxId"
 echo "Testing UUID_VAR_NAME default if empty works"
 
+start_test "Test incoming request ID headers get logged..." "${STD_CMD} \
+           --log-driver json-file \
+           -e \"PROXY_SERVICE_HOST=http://${MOCKSERVER}\" \
+           -e \"PROXY_SERVICE_PORT=${MOCKSERVER_PORT}\" \
+           -e \"DNSMASK=TRUE\" \
+           -e \"ENABLE_UUID_PARAM=FALSE\" \
+           -e \"UUID_VAR_NAME=Custom-Request-Id\" \
+           -e \"LOG_FORMAT_NAME=custom\" \
+           -e \"CUSTOM_LOG_FORMAT=uuid:\\\$uuid\" \
+           --link \"${MOCKSERVER}:${MOCKSERVER}\" "
+curl -sk -H 'Custom-Request-Id: donkeys' https://${DOCKER_HOST_NAME}:${PORT}
+docker logs "${MOCKSERVER}" 2>/dev/null | grep uuid:donkeys
+echo "... ok"
+
 echo "_________________________________"
 echo "We got here, ALL tests successful"
 clean_up
