@@ -93,13 +93,14 @@ location ${LOCATION} {
     include  ${NAXSI_LOCATION_RULES}/*.rules ;
 
     # We need to re-use these later, but cannot use include due to using variables.
-    set \$_request \$request;
-    if (\$_request ~ (.*)email=[^&+]*(.*)) {
-        set \$_request \$1email=****\$2;
-    }
     set \$_http_referer \$http_referer;
     if (\$_http_referer ~ (.*)email=[^&+]*(.*)) {
         set \$_http_referer \$1email=****\$2;
+    }
+
+    set \$_query_string \$query_string;
+    if (\$_query_string ~ (.*)email=[^&+]*(.*)) {
+        set \$_query_string \$1email=****\$2;
     }
 
     set \$backend_upstream "\$proxy_address";
@@ -123,7 +124,7 @@ cat << EOF_SERVERCACHE_CONF >> /etc/nginx/conf/locations/${LOCATION_ID}.conf
 location ~* ^${ESCAPED_LOCATION}(.+)\.(jpg|jpeg|gif|png|svg|ico|css|bmp|js|html|htm|ttf|otf|eot|woff|woff2|json)$ {
     proxy_cache staticcache;
     add_header X-Proxy-Cache \$upstream_cache_status;
-    
+
     # Nginx cache to ignore Node.js "Cache-Control: public, max-age=0"
     proxy_ignore_headers Cache-Control;
     proxy_hide_header Cache-Control;
@@ -139,13 +140,14 @@ location ~* ^${ESCAPED_LOCATION}(.+)\.(jpg|jpeg|gif|png|svg|ico|css|bmp|js|html|
     include  ${NAXSI_LOCATION_RULES}/*.rules ;
 
     # Re-use these again...
-    set \$_request \$request;
-    if (\$_request ~ (.*)email=[^&+]*(.*)) {
-        set \$_request \$1email=****\$2;
-    }
     set \$_http_referer \$http_referer;
     if (\$_http_referer ~ (.*)email=[^&+]*(.*)) {
         set \$_http_referer \$1email=****\$2;
+    }
+
+    set \$_query_string \$query_string;
+    if (\$_query_string ~ (.*)email=[^&+]*(.*)) {
+        set \$_query_string \$1email=****\$2;
     }
 
     set \$backend_upstream "\$proxy_address";

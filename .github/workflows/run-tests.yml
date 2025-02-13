@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Runs locally in about 4.5 minutes - if it takes longer than this, something has gone wrong.
-    timeout-minutes: 10 
+    timeout-minutes: 10
 
     defaults:
       run:
@@ -48,7 +48,7 @@ jobs:
           echo "Testing Minimal Server..."
           curl --fail -sk -o /dev/null "https://localhost:10443"
           echo "Check the log output"
-          docker compose logs test-minimal  | grep -E '[^:]+:'10443' [0-9a-f]+ - [0-9.]+ - \[[0-9]+/[A-Z][a-z][a-z]/[0-9:]{13} \+[0-9]{4}\] "GET / HTTP/1\.1" [0-9]{3} [0-9]+ [0-9]+\.[0-9]{3} - "-" "[^"]+"'
+          docker compose logs test-minimal  | grep -E 'server="[0-9a-z]+" dest_port="[0-9]+" dest_ip="[0-9.]+" src="[0-9.]+" src_ip="[0-9.]+" time_local="[0-9]+/[A-Z][a-z][a-z]/[0-9:]{13} \+[0-9]{4}" protocol="HTTP/1\.1" status="[0-9]{3}" bytes_out="[0-9]+" bytes_in="[0-9-]+" http_referer="" http_user_agent="curl/[0-9.]+" nginx_version="[0-9.]+" http_x_forwarded_for="-" http_x_header="-" uri_query="" uri_path="/" http_method="GET" response_time="-" request_time="[0-9.]+" category="text/html" https="" x_request_id=""'
           echo "Test limited protcol and SSL cipher... "
           docker compose run --rm --entrypoint bash nginx -c "echo GET / | /usr/bin/openssl s_client -cipher 'AES256+EECDH' -tls1_2 -connect test-minimal:10443"  &> /dev/null;
           docker compose stop test-minimal
