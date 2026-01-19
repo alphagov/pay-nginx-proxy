@@ -1,4 +1,4 @@
-SecRulesEnabled;
+SecRulesDisabled;
 DeniedUrl "/request-denied";
 ## check rules
 CheckRule "$SQL >= 8" BLOCK;
