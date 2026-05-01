@@ -8,15 +8,10 @@ set -e
 
 LOCATION_ID=$1
 LOCATION=$2
-NAXSI_LOCATION_RULES=/etc/nginx/naxsi/locations/${LOCATION_ID}
-mkdir -p ${NAXSI_LOCATION_RULES}
 
 # Resolve any location specific variable names here:
 PROXY_SERVICE_HOST=$(get_id_var ${LOCATION_ID} PROXY_SERVICE_HOST)
 PROXY_SERVICE_PORT=$(get_id_var ${LOCATION_ID} PROXY_SERVICE_PORT)
-NAXSI_RULES_URL_CSV=$(get_id_var ${LOCATION_ID} NAXSI_RULES_URL_CSV)
-NAXSI_RULES_MD5_CSV=$(get_id_var ${LOCATION_ID} NAXSI_RULES_MD5_CSV)
-NAXSI_USE_DEFAULT_RULES=$(get_id_var ${LOCATION_ID} NAXSI_USE_DEFAULT_RULES)
 REQS_PER_SEC=$(get_id_var ${LOCATION_ID} REQS_PER_SEC)
 REQS_PER_PAGE=$(get_id_var ${LOCATION_ID} REQS_PER_PAGE)
 RATE_LIMIT_DELAY=$(get_id_var ${LOCATION_ID} RATE_LIMIT_DELAY)
@@ -39,28 +34,6 @@ if diff /container_default_ngx /tmp/nginx_new ; then
         exit 1
     fi
     msg "Proxying to : $PROXY_SERVICE_HOST:$PROXY_SERVICE_PORT"
-fi
-
-
-if [ "${NAXSI_RULES_URL_CSV}" != "" ]; then
-    if [ "${NAXSI_RULES_MD5_CSV}" == "" ]; then
-        exit_error_msg "Error, must specify NAXSI_RULES_MD5_CSV if NAXSI_RULES_URL_CSV is specified"
-    fi
-    IFS=',' read -a NAXSI_RULES_URL_ARRAY <<< "$NAXSI_RULES_URL_CSV"
-    IFS=',' read -a NAXSI_RULES_MD5_ARRAY <<< "$NAXSI_RULES_MD5_CSV"
-    if [ ${#NAXSI_RULES_URL_ARRAY[@]} -ne ${#NAXSI_RULES_MD5_ARRAY[@]} ]; then
-        exit_error_msg "Must specify the same number of items in \$NAXSI_RULES_URL_CSV and \$NAXSI_RULES_MD5_CSV"
-    fi
-    for i in "${!NAXSI_RULES_URL_ARRAY[@]}"; do
-        download ${NAXSI_RULES_URL_ARRAY[$i]} ${NAXSI_RULES_MD5_ARRAY[$i]} ${NAXSI_LOCATION_RULES}
-    done
-fi
-if [ "${NAXSI_USE_DEFAULT_RULES}" == "FALSE" ]; then
-    msg "Not setting up NAXSI default rules for location:'${LOCATION}'"
-else
-    msg "Core NAXSI rules enabled @ /etc/nginx/naxsi/naxsi_core.rules"
-    msg "NAXSI location rules enabled @ ${NAXSI_LOCATION_RULES}/${LOCATION_ID}.rules"
-    cp /etc/nginx/naxsi/location.template ${NAXSI_LOCATION_RULES}/${LOCATION_ID}.rules
 fi
 
 if [ "${REQS_PER_SEC}" != "" ]; then
@@ -89,8 +62,6 @@ location ${LOCATION} {
     proxy_set_header X-Request-Id \$uuid;
 
     set \$proxy_address "${PROXY_SERVICE_HOST}:${PROXY_SERVICE_PORT}";
-
-    include  ${NAXSI_LOCATION_RULES}/*.rules ;
 
     # We need to re-use these later, but cannot use include due to using variables.
     set \$_http_referer \$http_referer;
@@ -136,8 +107,6 @@ location ~* ^${ESCAPED_LOCATION}(.+)\.(jpg|jpeg|gif|png|svg|ico|css|bmp|js|html|
     proxy_set_header X-Request-Id \$uuid;
 
     set \$proxy_address "${PROXY_SERVICE_HOST}:${PROXY_SERVICE_PORT}";
-
-    include  ${NAXSI_LOCATION_RULES}/*.rules ;
 
     # Re-use these again...
     set \$_http_referer \$http_referer;

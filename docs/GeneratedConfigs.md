@@ -25,9 +25,6 @@ location / {
 
     set $proxy_address "myapp.svc.cluster.local:8080";
 
-    include  /etc/nginx/conf/naxsi/locations/1/*.rules ;
-
-
     set $backend_upstream "http://$proxy_address";
     proxy_pass $backend_upstream;
     proxy_redirect  off;
@@ -43,9 +40,6 @@ location /news {
 
 
     set $proxy_address "myapi.svc.cluster.local:8888";
-
-    include  /etc/nginx/conf/naxsi/locations/2/*.rules ;
-
 
     set $backend_upstream "http://$proxy_address";
     proxy_pass $backend_upstream;
